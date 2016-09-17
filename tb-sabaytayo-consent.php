@@ -16,7 +16,7 @@
   define('WORKING_DIR', '/kunden/homepages/41/d579830064/htdocs/clickandbuilds/SabayTayo/' );
   define('LOG_DIR', WORKING_DIR.'tb-logs/' );
   define('LOG_FILE', LOG_DIR.'sabaytayo-subscriber-consent.log' );
-  define('SUBSCRIBER_TABLE', 'tb_member_mobiles' );
+  define('SUBSCRIBER_TABLE', 'st_member_mobiles' );
   
   
 /***************************************************************
