@@ -22,7 +22,7 @@
   define('LOG_DIR', WORKING_DIR.'tb-logs/' );
   define('LOG_FILE', LOG_DIR.APP_NAME.'.log' );
   define('INCOMING_TEXTS_DIR', WORKING_DIR.'tb-in/' );
-  define('GLOBE_APP_NUMBER', 0465);
+  define('GLOBE_APP_NUMBER', '0465');
   define('TOKEN_SEPARATOR', "|||" );
   define('PHP_FULL_PATH',  '/usr/bin/php5.5-cli' );
   define('ST_POLLER', WORKING_DIR.'tb-sabaytayo-poller.php' );
@@ -96,7 +96,7 @@
   function get_access_token($phone_number) {
     global $handle,$wpdb;
 
-    $query = "SELECT access_token FROM ".SUBSCRIBER_TABLE." WHERE subscriber_number = $phone_number" ;
+    $query = "SELECT access_token FROM ".SUBSCRIBER_TABLE." WHERE subscriber_number = '$phone_number'" ;
     if (DEBUG) {
       fwrite($handle, "SQL QUERY: $query\n");
     }
