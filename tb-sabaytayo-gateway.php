@@ -25,7 +25,7 @@
   define('GLOBE_APP_NUMBER', 0465);
   define('TOKEN_SEPARATOR', "|||" );
   define('PHP_FULL_PATH',  '/usr/bin/php5.5-cli' );
-  define('ST_PROCESSOR', WORKING_DIR.'tb-sabaytayo-poller.php' );
+  define('ST_POLLER', WORKING_DIR.'tb-sabaytayo-poller.php' );
 
 /***************************************************************
 * CONSTANTS - End
@@ -238,9 +238,9 @@
     file_put_contents($textfilename, $timestamp.TOKEN_SEPARATOR.$subscriber_number.TOKEN_SEPARATOR.$text);
   }
     
-  // exec(PHP_FULL_PATH.' '.ST_PROCESSOR);
+  // exec(PHP_FULL_PATH.' '.ST_POLLER);
   // if (DEBUG) {
-    // fwrite($handle, "$timestamp: ".ST_PROCESSOR." executed.\n");
+    // fwrite($handle, "$timestamp: ".ST_POLLER." executed.\n");
   // }
   
   // properly close log file
