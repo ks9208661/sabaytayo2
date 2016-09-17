@@ -26,6 +26,8 @@
   define('TOKEN_SEPARATOR', "|||" );
   define('PHP_FULL_PATH',  '/usr/bin/php5.5-cli' );
   define('ST_POLLER', WORKING_DIR.'tb-sabaytayo-poller.php' );
+  define('SUBSCRIBER_TABLE', 'st_member_mobiles' );
+  
 
 /***************************************************************
 * CONSTANTS - End
@@ -94,7 +96,7 @@
   function get_access_token($phone_number) {
     global $handle,$wpdb;
 
-    $query = "SELECT access_token FROM subscr_acctoken WHERE subscriber_number = '".$phone_number."'" ;
+    $query = "SELECT access_token FROM ".SUBSCRIBER_TABLE." WHERE subscriber_number = $phone_number" ;
     if (DEBUG) {
       fwrite($handle, "SQL QUERY: $query\n");
     }
