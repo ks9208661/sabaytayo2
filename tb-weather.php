@@ -43,7 +43,8 @@ function check_params($text) {
 	
 	switch ( $check[0] ) {
 		case 'WEATHER':
-			echo $check[1];
+			echo get_current_weather( $check[1] );
+
 			break;
 		
 		case 'BOATMAN':
@@ -59,13 +60,14 @@ function check_params($text) {
 }
 
 
-$text = 'WEATHER/test';
+$text = 'WEATHER/PHROMSBL';
+//$text = 'WEATHER/PHROMSMR';
 
 echo check_params($text);
 
 
-$place = 'PHMDRPIN';
-echo get_current_weather($place);
+//$place = 'PHMDRPIN';
+//echo get_current_weather($place);
 
 
 ?>
