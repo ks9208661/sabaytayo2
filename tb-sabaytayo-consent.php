@@ -12,7 +12,6 @@
 ***************************************************************/
 
   define('DEBUG', true );
-  define('APP_NAME', 'SABAYTAYO' );
   define('WORKING_DIR', '/kunden/homepages/41/d579830064/htdocs/clickandbuilds/SabayTayo/' );
   define('LOG_DIR', WORKING_DIR.'tb-logs/' );
   define('LOG_FILE', LOG_DIR.'sabaytayo-subscriber-consent.log' );

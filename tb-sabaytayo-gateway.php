@@ -20,7 +20,7 @@
   define('DEFAULT_TIMEZONE_OFFSET', '+08:00' );
   define('WORKING_DIR', '/kunden/homepages/41/d579830064/htdocs/clickandbuilds/SabayTayo/' );
   define('LOG_DIR', WORKING_DIR.'tb-logs/' );
-  define('LOG_FILE', LOG_DIR.'sabaytayo.log' );
+  define('LOG_FILE', LOG_DIR.APP_NAME.'.log' );
   define('INCOMING_TEXTS_DIR', WORKING_DIR.'tb-in/' );
   define('GLOBE_APP_NUMBER', 0465);
   define('TOKEN_SEPARATOR', "|||" );
