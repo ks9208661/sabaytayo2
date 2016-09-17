@@ -133,26 +133,26 @@ Description:
 
   // prepare query
   if ($dept_date == '0000-00-00') {
-    $query .= "SELECT * FROM trips ";
-    $query .= "WHERE port_orig = '$port_orig' ";
+    $query .= "SELECT * FROM ".TRIPS_TABLE;
+    $query .= " WHERE port_orig = '$port_orig' ";
     $query .= "AND   port_dest = '$port_dest' ";
     $query .= "AND   dept_date <> '0000-00-00' ";
     $query .= "AND   dept_timestamp - unix_timestamp() < ".TIME_WINDOW;
     $query .= " UNION ";
-    $query .= "SELECT * FROM trips ";
-    $query .= "WHERE port_orig = '$port_orig' ";
+    $query .= "SELECT * FROM ".TRIPS_TABLE;
+    $query .= " WHERE port_orig = '$port_orig' ";
     $query .= "AND   port_dest = '$port_dest' ";
     $query .= "AND   dept_date = '0000-00-00' ";
     $query .= "AND   timestamp - unix_timestamp() < ".TIME_WINDOW;
   } else {  
-    $query  = "SELECT * FROM trips ";
-    $query .= "WHERE port_orig = '$port_orig' ";
+    $query  = "SELECT * FROM ".TRIPS_TABLE;
+    $query .= " WHERE port_orig = '$port_orig' ";
     $query .= "AND   port_dest = '$port_dest' ";
     $query .= "AND   dept_date = '$dept_date' ";
     $query .= "AND   STR_TO_DATE(CONCAT(dept_date, ' ', dept_time), '%Y-%m-%d %H:%i:%s')  >= convert_tz(NOW(),'-4:00','+8:00') "; // *** this is hardcoded to Eastern DAYLIGHT Time - find a way to remove dependency!!!
     $query .= " UNION ";
-    $query .= "SELECT * FROM trips ";
-    $query .= "WHERE port_orig = '$port_orig' ";
+    $query .= "SELECT * FROM ".TRIPS_TABLE;
+    $query .= " WHERE port_orig = '$port_orig' ";
     $query .= "AND   port_dest = '$port_dest' ";
     $query .= "AND   dept_date = '0000-00-00' ";
     $query .= "AND   unix_timestamp() - timestamp < ".TIME_WINDOW;
