@@ -27,6 +27,7 @@ Description:
   define('DEFAULT_TIMEZONE_OFFSET', '+08:00' );
   define('TIME_WINDOW', 1209600); // 2 weeks
   define('TRIPS_TABLE', 'st_trips' );
+  define('SUBSCRIBER_TABLE', 'st_member_mobiles' );
 
 /***************************************************************
 * CONSTANTS - End
