@@ -123,7 +123,7 @@ Description:
   }  
  
   function sabaytayo($text) {
-    global $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes;
+    global $subscriber_number, $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes;
     global $handle, $timestamp;
     global $wpdb;  
 
