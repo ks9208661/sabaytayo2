@@ -102,18 +102,20 @@ Description:
     global $handle, $subscriber_number;
     
     $check = explode('/', $text);
-    
+    $forecast = strtoupper($check[1]);
+    $chk_weather = strtoupper($check[2]);
+  
     switch ( strtoupper($check[0]) ) {
       case 'SABAYTAYO':
         sabaytayo($text);
         break;
       case 'WEATHER':
-      	if ( ($check[1]) == 'FORECAST' ) {
-        	$response_sms = get_current_weather( $check[2] );
+      	if ( ($forecast) == 'FORECAST' ) {
+        	$response_sms = get_current_weather( $chk_weather );
 			send_sms($subscriber_number, $response_sms);
 			break;
       	} else {
-	      	$response_sms = get_current_weather( $check[2] );
+	      	$response_sms = get_current_weather( $chk_weather );
 			send_sms($subscriber_number, $response_sms);
 			break;
       	}
@@ -192,7 +194,7 @@ Description:
     function get_current_weather($port) {  
     global $wpdb;  
 
-    $query = " SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
+    $query = " SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current, gale_warning
         FROM st_weather 
         WHERE port='".$port."' " ;
     echo "Query = $query\n";
