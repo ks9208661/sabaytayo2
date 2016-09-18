@@ -190,7 +190,6 @@ Description:
     
     $return = $wpdb->get_row($query);
     
-    echo "Return from query = $return\n";    
     var_dump($return);
     
     $date1 = date('Y-m-d', $return->last_update);
