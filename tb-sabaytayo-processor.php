@@ -27,6 +27,7 @@ Description:
   define('DEFAULT_TIMEZONE_OFFSET', '+08:00' );
   define('TIME_WINDOW', 1209600); // 2 weeks
   define('TRIPS_TABLE', 'st_trips' );
+  define('GLOBE_APP_NUMBER', '0465');
   define('SUBSCRIBER_TABLE', 'st_member_mobiles' );
 
 /***************************************************************
@@ -194,7 +195,7 @@ Description:
     
     $date1 = date('Y-m-d', $return->last_update);
     
-    $return_text = 'Current Weather for $port on ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
+    $return_text = 'Current Weather for '. $port .' on ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
     return $return_text;
     
   }	
