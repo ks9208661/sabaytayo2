@@ -84,14 +84,6 @@
     return($isvalid);
   }
 
-  function terminate_with_message($errormessage) {
-    global $handle;
-
-    fwrite($handle, $errormessage);
-    fclose($handle);
-    die($errormessage);
-  }
-
   // get access token of the subscriber number
   function get_access_token($phone_number) {
     global $handle,$wpdb;
@@ -129,42 +121,45 @@
     // parse parameters
     $parameters = explode("/", $t);
 
-    // filter 1: num of parameters must be 5-6. The 'notes' field is optional.
-    if (count($parameters) < 5) {
-      $em = "Message must follow the following pattern: origin/destination/departure date in YYYY-MM-DD format/latest departure time in HH:mm format, military time/number of passengers/notes. Ex 1: PHPIN/PHSBL/2017-01-31/16:00/3/can leave as early as 14:00";
-      return $em;
+    if (APP_NAME == strtolower($parameters[0]) {
+      // filter 1: num of parameters must be 6-7. The 'notes' field is optional.
+      if (count($parameters) < 6) {
+        $em = "Message must follow the following pattern (case insensitive): SABAYTAYO/origin/destination/departure date in YYYY-MM-DD format/latest departure time in HH:mm format, military time/number of passengers/notes. Ex 1: SABAYTAYO/PHPIN/PHSBL/2017-01-31/16:00/3/can leave as early as 14:00";
+        return $em;
+      }
+
+    // filter 2: parameters must be in the right format
+      $port_orig = strtoupper($parameters[1]);
+      $port_dest = strtoupper($parameters[2]);
+      $dept_date = $parameters[3];
+      $dept_time = $parameters[4];
+      $pax       = $parameters[5];
+      $notes     = $parameters[6];
+
+      if (! isvalid($port_orig, 'port') ) {
+        $em .= "Origin not in list. Pls refer to list of valid ports. ";
+      }
+
+      if (! isvalid($port_dest, 'port') ) {
+        $em .= "Destination not in list. Pls refer to list of valid ports. ";
+      }
+
+      if (! isvalid($dept_date, 'date') ) {
+        $em .= "Date format must be YYYY-MM-DD, ex. 2016-01-13 for 13 January 2016. ";
+      }
+
+      if (! isvalid($dept_time, 'time') ) {
+        $em .= "Time format must be HH:mm, military time, ex. 13:45 for 1:45 PM. ";
+      }
+
+      if (! isvalid($pax, 'pax') ) {
+        $em .= "Number of passengers must be a whole number. ";
+      }
+
+      // do something for the optional notes field to prevent SQL injection!!!
+              
     }
-
-  // filter 2: parameters must be in the right format
-    $port_orig = strtoupper($parameters[0]);
-    $port_dest = strtoupper($parameters[1]);
-    $dept_date = $parameters[2];
-    $dept_time = $parameters[3];
-    $pax       = $parameters[4];
-    $notes     = $parameters[5];
-
-    if (! isvalid($port_orig, 'port') ) {
-      $em .= "Origin not in list. Pls refer to list of valid ports. ";
-    }
-
-    if (! isvalid($port_dest, 'port') ) {
-      $em .= "Destination not in list. Pls refer to list of valid ports. ";
-    }
-
-    if (! isvalid($dept_date, 'date') ) {
-      $em .= "Date format must be YYYY-MM-DD, ex. 2016-01-13 for 13 January 2016. ";
-    }
-
-    if (! isvalid($dept_time, 'time') ) {
-      $em .= "Time format must be HH:mm, military time, ex. 13:45 for 1:45 PM. ";
-    }
-
-    if (! isvalid($pax, 'pax') ) {
-      $em .= "Number of passengers must be a whole number. ";
-    }
-
-    // do something for the optional notes field to prevent SQL injection!!!
-
+    
     return $em;
   }
 
@@ -231,14 +226,18 @@
 
   // validate text message
   // if is wrongly formatted, inform user by SMS then quit program
+/*
   $se = syntax_error($text);
   if (!($se === '')) {
     send_sms($subscriber_number, $se);
   } else {
+*/
     // create file with text message + other data
     $textfilename = INCOMING_TEXTS_DIR.APP_NAME.".$timestamp";
     file_put_contents($textfilename, $timestamp.TOKEN_SEPARATOR.$subscriber_number.TOKEN_SEPARATOR.$text);
+/*
   }
+*/
     
   // exec(PHP_FULL_PATH.' '.ST_POLLER);
   // if (DEBUG) {
