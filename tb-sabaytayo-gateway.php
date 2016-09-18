@@ -121,7 +121,7 @@
     // parse parameters
     $parameters = explode("/", $t);
 
-    if (APP_NAME == strtolower($parameters[0]) {
+    if (APP_NAME == strtolower($parameters[0])) {
       // filter 1: num of parameters must be 6-7. The 'notes' field is optional.
       if (count($parameters) < 6) {
         $em = "Message must follow the following pattern (case insensitive): SABAYTAYO/origin/destination/departure date in YYYY-MM-DD format/latest departure time in HH:mm format, military time/number of passengers/notes. Ex 1: SABAYTAYO/PHPIN/PHSBL/2017-01-31/16:00/3/can leave as early as 14:00";
