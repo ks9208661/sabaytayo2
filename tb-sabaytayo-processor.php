@@ -210,7 +210,7 @@ Description:
 	    $warn = 'GALE WARNING! ';
     } 
     
-    $return_text = $warn . 'Current Weather for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_current . ' Windspeed:' . $return->windspeed_current . 'kph ' . $return->direction_current . ' with chance of rain: ' .$return->chance_rain_current . '%'; 
+    $return_text = $warn . 'Current Weather for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_current . ' Windspeed:' . $return->windspeed_current . 'kph ' . $return->direction_current . ' with ' .$return->chance_rain_current . '% chance of rain'; 
     return $return_text;
   }	
   
@@ -227,13 +227,15 @@ Description:
 	    var_dump($return);
 	    
 	    $date1 = date('Y-m-d', $return->last_update);
+	    $date1 = $date1 + 12*60*60 ;
+	    
 	    $gale_warning = $return->gale_warning;
 	    $warn ='';
 	    if ( ($gale_warning) == 1) {
 		    $warn = 'GALE WARNING! ';
-	    } 
+	    }    
 	    
-	    $return_text = $warn . 'Weather forecast for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_forecast . ' Windspeed:' . $return->windspeed_forecast . 'kph ' . $return->direction_forecast . ' with chance of rain: ' .$return->chance_rain_forecast . '%'; 
+	    $return_text = $warn . 'Weather forecast for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_forecast . ' Windspeed: ' . $return->windspeed_forecast . 'kph ' . $return->direction_forecast . ' with ' .$return->chance_rain_forecast . '% chance of rain'; 
     return $return_text;
   }	
 
