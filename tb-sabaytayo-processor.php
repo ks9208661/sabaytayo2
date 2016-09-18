@@ -217,7 +217,7 @@ Description:
     function get_forecast_weather($port) {  
 	    global $wpdb;  
 	
-	    $query = " SELECT last_update, temp_current, windspeed_forecast, direction_forecast, chance_rain_forecast, gale_warning_forecast, port_desc
+	    $query = " SELECT last_update, temp_forecast, windspeed_forecast, direction_forecast, chance_rain_forecast, gale_warning_forecast, port_desc
 	        FROM st_weather 
 	        WHERE port='".$port."' " ;
 	    echo "Query = $query\n";
@@ -233,7 +233,7 @@ Description:
 		    $warn = 'GALE WARNING! ';
 	    } 
 	    
-	    $return_text = 'FORECAST ' . $warn . 'Current Weather for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_current . ' Windspeed:' . $return->windspeed_current . 'kph ' . $return->direction_current . ' with chance of rain: ' .$return->chance_rain_current . '%'; 
+	    $return_text = $warn . 'Weather forecast for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_forecast . ' Windspeed:' . $return->windspeed_forecast . 'kph ' . $return->direction_forecast . ' with chance of rain: ' .$return->chance_rain_forecast . '%'; 
     return $return_text;
   }	
 
