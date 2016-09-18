@@ -183,14 +183,19 @@ Description:
   function get_current_weather($port) {  
     global $wpdb;  
 
-    $return = $wpdb->get_row(" 
-        SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
+    $query = " SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
         FROM st_weather 
-        WHERE port='".$port."' ") ;
+        WHERE port='".$port."' " ;
+    echo "Query = $query\n";
+    
+    $return = $wpdb->get_row($query);
+    
+    echo "Return from query = $return\n";    
+    var_dump($return);
     
     $date1 = date('Y-m-d', $return->last_update);
     
-    $return_text = 'Weather for ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
+    $return_text = 'Current Weather for $port on ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
     return $return_text;
     
   }	
