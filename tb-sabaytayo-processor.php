@@ -97,6 +97,8 @@ Description:
   }
 
   function check_params($text) {
+    global $handle, $subscriber_number;
+    
     $check = explode('/', $text);
     
     switch ( strtoupper($check[0]) ) {
@@ -119,6 +121,8 @@ Description:
   }  
  
   function sabaytayo($text) {
+    global $wpdb;  
+
     split_parameters($text);
     if ($dept_date == '')
       $dept_date = '0000-00-00';
@@ -175,8 +179,9 @@ Description:
     file_put_contents(QUERY_FILE, "$query\n", FILE_APPEND | LOCK_EX);
   }
   
-  function get_current_weather($port) {    
-    // insert entry into sabaytayo table in database
+  function get_current_weather($port) {  
+    global $wpdb;  
+
     $return = $wpdb->get_row(" 
         SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
         FROM st_weather 
@@ -211,7 +216,7 @@ Description:
   require(BASE_PATH . 'wp-load.php');
   global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header, $wpdb;
   global $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes;
-  global $handle, $globe, $timestamp;
+  global $handle, $globe, $timestamp, $subscriber_number;
 
   // Prep for sending SMS via Globe API
   session_start();
