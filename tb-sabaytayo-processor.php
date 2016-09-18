@@ -111,7 +111,7 @@ Description:
         break;
       case 'WEATHER':
       	if ( ($forecast) == 'FORECAST' ) {
-        	$response_sms = get_current_weather( $chk_weather );
+        	$response_sms = get_forecast_weather( $chk_weather );
 			send_sms($subscriber_number, $response_sms);
 			break;
       	} else {
@@ -194,7 +194,7 @@ Description:
     function get_current_weather($port) {  
     global $wpdb;  
 
-    $query = " SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current, gale_warning, port_desc
+    $query = " SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current, gale_warning_current, port_desc
         FROM st_weather 
         WHERE port='".$port."' " ;
     echo "Query = $query\n";
@@ -211,6 +211,29 @@ Description:
     } 
     
     $return_text = $warn . 'Current Weather for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_current . ' Windspeed:' . $return->windspeed_current . 'kph ' . $return->direction_current . ' with chance of rain: ' .$return->chance_rain_current . '%'; 
+    return $return_text;
+  }	
+  
+    function get_forecast_weather($port) {  
+	    global $wpdb;  
+	
+	    $query = " SELECT last_update, temp_current, windspeed_forecast, direction_forecast, chance_rain_forecast, gale_warning_forecast, port_desc
+	        FROM st_weather 
+	        WHERE port='".$port."' " ;
+	    echo "Query = $query\n";
+	    
+	    $return = $wpdb->get_row($query);
+	    
+	    var_dump($return);
+	    
+	    $date1 = date('Y-m-d', $return->last_update);
+	    $gale_warning = $return->gale_warning;
+	    $warn ='';
+	    if ( ($gale_warning) == 1) {
+		    $warn = 'GALE WARNING! ';
+	    } 
+	    
+	    $return_text = 'FORECAST ' . $warn . 'Current Weather for '. $return->port_desc .' on ' . $date1 . ' Temp: ' . $return->temp_current . ' Windspeed:' . $return->windspeed_current . 'kph ' . $return->direction_current . ' with chance of rain: ' .$return->chance_rain_current . '%'; 
     return $return_text;
   }	
 
