@@ -235,6 +235,9 @@
     // create file with text message + other data
     $textfilename = INCOMING_TEXTS_DIR.APP_NAME.".$timestamp";
     file_put_contents($textfilename, $timestamp.TOKEN_SEPARATOR.$subscriber_number.TOKEN_SEPARATOR.$text);
+    if (DEBUG) {
+      fwrite($handle, "$timestamp: Text file $textfilename created.\n");
+    }
 /*
   }
 */
