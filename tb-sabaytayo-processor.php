@@ -48,6 +48,35 @@ Description:
     return null;
   }
 
+  // get access token of the subscriber number
+  function get_access_token($phone_number) {
+    global $handle,$wpdb;
+
+    $query = "SELECT access_token FROM ".SUBSCRIBER_TABLE." WHERE subscriber_number = '$phone_number'" ;
+    if (DEBUG) {
+      fwrite($handle, "SQL QUERY: $query\n");
+    }
+    $results = $wpdb->get_results($query);
+    $tok = $results[0]->access_token;
+    if (DEBUG) {
+      fwrite($handle, "ACCESS TOKEN: $tok\n");
+    }
+    return $tok;
+  }
+
+  function send_sms($phone_number, $message) {
+    global $handle, $globe, $timestamp;
+
+    $sms = $globe->sms(GLOBE_APP_NUMBER);
+    $acctok = get_access_token($phone_number);
+    $response = $sms->sendMessage($acctok, $phone_number, $message);
+    if (DEBUG) {
+      fwrite($handle, "$timestamp: SMS Response to $phone_number = $message\n");
+    }
+    $logfilename = LOG_DIR."$timestamp.$phone_number.response";
+    file_put_contents($logfilename, $message);
+  }
+
   function split_parameters($t) {
     global $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes;
     global $handle, $timestamp;
@@ -55,17 +84,112 @@ Description:
     // parse parameters
     $parameters = explode(PARAM_SEPARATOR, $t);
 
-    $port_orig = strtoupper($parameters[0]);
-    $port_dest = strtoupper($parameters[1]);
-    $dept_date = $parameters[2];
-    $dept_time = $parameters[3];
-    $pax       = $parameters[4];
-    $notes     = $parameters[5];
+    $port_orig = strtoupper($parameters[1]);
+    $port_dest = strtoupper($parameters[2]);
+    $dept_date = $parameters[3];
+    $dept_time = $parameters[4];
+    $pax       = $parameters[5];
+    $notes     = $parameters[6];
 
     if (DEBUG) {
       fwrite($handle, "$timestamp: Port of Origin = $port_orig, Port of Destination = $port_dest, Departure Date = $dept_date, Departure Time = $dept_time, Pax = $pax, Notes = $notes\n");
     }
   }
+
+  function check_params($text) {
+    $check = explode('/', $text);
+    
+    switch ( strtoupper($check[0]) ) {
+      case 'SABAYTAYO':
+        sabaytayo($text);
+        break;
+      case 'WEATHER':
+        $response_sms = get_current_weather( $check[1] );
+        send_sms($subscriber_number, $response_sms);
+        break;
+      
+      case 'BOATMAN':
+        echo $check[1];
+        break;
+      
+      case 'TRIPS':
+        echo $check[1];
+        break;	
+    }
+  }  
+ 
+  function sabaytayo($text) {
+    split_parameters($text);
+    if ($dept_date == '')
+      $dept_date = '0000-00-00';
+    
+    // insert entry into sabaytayo table in database
+    $wpdb->replace(TRIPS_TABLE, array(
+        'subscriber_number' => $subscriber_number
+      , 'port_orig' => $port_orig
+      , 'port_dest' => $port_dest
+      , 'dept_date' => $dept_date
+      , 'dept_time' => $dept_time
+      , 'pax' => $pax
+      , 'notes' => $notes
+      , 'timezone' => DEFAULT_TIMEZONE_OFFSET
+      , 'dept_timestamp' => strtotime("$dept_date $dept_time")
+      , 'timestamp' => $timestamp
+      ), array('%s', '%s', '%s', '%s', '%s','%d', '%s', '%s', '%d', '%d' )
+    );
+    if (DEBUG) {
+      fwrite($handle, "$timestamp: Inserting into database: $subscriber_number, $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes, ". DEFAULT_TIMEZONE_OFFSET . ", " . strtotime("$dept_date $dept_time") . ", $timestamp\n");
+    }
+
+    // prepare query
+    if ($dept_date == '0000-00-00') {
+      $query .= " SELECT * FROM ".TRIPS_TABLE;
+      $query .= " WHERE port_orig = '$port_orig' ";
+      $query .= " AND   port_dest = '$port_dest' ";
+      $query .= " AND   dept_date <> '0000-00-00' ";
+      $query .= " AND   dept_timestamp - unix_timestamp() < ".TIME_WINDOW;
+      $query .= " UNION ";
+      $query .= " SELECT * FROM ".TRIPS_TABLE;
+      $query .= " WHERE port_orig = '$port_orig' ";
+      $query .= " AND   port_dest = '$port_dest' ";
+      $query .= " AND   dept_date = '0000-00-00' ";
+      $query .= " AND   timestamp - unix_timestamp() < ".TIME_WINDOW;
+    } else {  
+      $query  = " SELECT * FROM ".TRIPS_TABLE;
+      $query .= " WHERE port_orig = '$port_orig' ";
+      $query .= " AND   port_dest = '$port_dest' ";
+      $query .= " AND   dept_date = '$dept_date' ";
+      $query .= " AND   STR_TO_DATE(CONCAT(dept_date, ' ', dept_time), '%Y-%m-%d %H:%i:%s')  >= convert_tz(NOW(),'-4:00','+8:00') "; // *** this is hardcoded to Eastern DAYLIGHT Time - find a way to remove dependency!!!
+      $query .= " UNION ";
+      $query .= " SELECT * FROM ".TRIPS_TABLE;
+      $query .= " WHERE port_orig = '$port_orig' ";
+      $query .= " AND   port_dest = '$port_dest' ";
+      $query .= " AND   dept_date = '0000-00-00' ";
+      $query .= " AND   unix_timestamp() - timestamp < ".TIME_WINDOW;
+    }  
+    if (DEBUG) {
+      fwrite($handle, "$timestamp: SQL Query: $query\n");
+    }
+
+    // add query statement into query file
+    file_put_contents(QUERY_FILE, "$query\n", FILE_APPEND | LOCK_EX);
+  }
+  
+  function get_current_weather($port) {    
+    // insert entry into sabaytayo table in database
+    $return = $wpdb->get_row(" 
+        SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
+        FROM st_weather 
+        WHERE port='$port' ") ;
+    
+    $date1 = date('Y-m-d', $return->last_update);
+    
+    $return_text = 'Weather for ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
+    return $return_text;
+    
+  }	
+
+
   
 /***************************************************************
 * FUNCTIONS - End
@@ -82,11 +206,17 @@ Description:
 
   // General prep work
   $_SERVER['HTTP_HOST'] = 'sabaytayo.inourshoes.info';
-  define('WP_ADMIN', true);
+  //define('WP_ADMIN', true);
   define('BASE_PATH', find_wordpress_base_path()."/" );
   require(BASE_PATH . 'wp-load.php');
   global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header, $wpdb;
   global $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes;
+  global $handle, $globe, $timestamp;
+
+  // Prep for sending SMS via Globe API
+  session_start();
+  require ('api/PHP/src/GlobeApi.php');
+  $globe = new GlobeApi('v1');
 
   // set up log file
   $handle = fopen(LOG_FILE, 'a') or die('Cannot open file:  '.LOG_FILE);
@@ -109,64 +239,12 @@ Description:
     fwrite($handle, "$timestamp: Subscriber Number = $subscriber_number, Text Message = $text\n");
   }
 
-  split_parameters($text);
-  if ($dept_date == '')
-    $dept_date = '0000-00-00';
+  check_params($text);
+
+  fclose($handle);
   
-  // insert entry into sabaytayo table in database
-  $wpdb->replace(TRIPS_TABLE, array(
-      'subscriber_number' => $subscriber_number
-    , 'port_orig' => $port_orig
-    , 'port_dest' => $port_dest
-    , 'dept_date' => $dept_date
-    , 'dept_time' => $dept_time
-    , 'pax' => $pax
-    , 'notes' => $notes
-    , 'timezone' => DEFAULT_TIMEZONE_OFFSET
-    , 'dept_timestamp' => strtotime("$dept_date $dept_time")
-    , 'timestamp' => $timestamp
-    ), array('%s', '%s', '%s', '%s', '%s','%d', '%s', '%s', '%d', '%d' )
-  );
-  if (DEBUG) {
-    fwrite($handle, "$timestamp: Inserting into database: $subscriber_number, $port_orig, $port_dest, $dept_date, $dept_time, $pax, $notes, ". DEFAULT_TIMEZONE_OFFSET . ", " . strtotime("$dept_date $dept_time") . ", $timestamp\n");
-  }
-
-  // prepare query
-  if ($dept_date == '0000-00-00') {
-    $query .= " SELECT * FROM ".TRIPS_TABLE;
-    $query .= " WHERE port_orig = '$port_orig' ";
-    $query .= " AND   port_dest = '$port_dest' ";
-    $query .= " AND   dept_date <> '0000-00-00' ";
-    $query .= " AND   dept_timestamp - unix_timestamp() < ".TIME_WINDOW;
-    $query .= " UNION ";
-    $query .= " SELECT * FROM ".TRIPS_TABLE;
-    $query .= " WHERE port_orig = '$port_orig' ";
-    $query .= " AND   port_dest = '$port_dest' ";
-    $query .= " AND   dept_date = '0000-00-00' ";
-    $query .= " AND   timestamp - unix_timestamp() < ".TIME_WINDOW;
-  } else {  
-    $query  = " SELECT * FROM ".TRIPS_TABLE;
-    $query .= " WHERE port_orig = '$port_orig' ";
-    $query .= " AND   port_dest = '$port_dest' ";
-    $query .= " AND   dept_date = '$dept_date' ";
-    $query .= " AND   STR_TO_DATE(CONCAT(dept_date, ' ', dept_time), '%Y-%m-%d %H:%i:%s')  >= convert_tz(NOW(),'-4:00','+8:00') "; // *** this is hardcoded to Eastern DAYLIGHT Time - find a way to remove dependency!!!
-    $query .= " UNION ";
-    $query .= " SELECT * FROM ".TRIPS_TABLE;
-    $query .= " WHERE port_orig = '$port_orig' ";
-    $query .= " AND   port_dest = '$port_dest' ";
-    $query .= " AND   dept_date = '0000-00-00' ";
-    $query .= " AND   unix_timestamp() - timestamp < ".TIME_WINDOW;
-  }  
-  if (DEBUG) {
-    fwrite($handle, "$timestamp: SQL Query: $query\n");
-  }
-
-  // add query statement into query file
-  file_put_contents(QUERY_FILE, "$query\n", FILE_APPEND | LOCK_EX);
-
 /***************************************************************
 * MAIN PROGRAM - End
 ***************************************************************/
 
-  fclose($handle);
 ?>
