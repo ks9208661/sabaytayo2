@@ -180,7 +180,7 @@ Description:
     $return = $wpdb->get_row(" 
         SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
         FROM st_weather 
-        WHERE port='$port' ") ;
+        WHERE port='".$port."' ") ;
     
     $date1 = date('Y-m-d', $return->last_update);
     
