@@ -204,7 +204,7 @@ Description:
     var_dump($return);
     
     $date1 = date('Y-m-d', $return->last_update);
-    $gale_warning = $return->gale_warning;
+    $gale_warning = $return->gale_warning_current;
     $warn ='';
     if ( ($gale_warning) == 1) {
 	    $warn = 'GALE WARNING! ';
@@ -229,7 +229,7 @@ Description:
 	    $date1 = date('Y-m-d', $return->last_update);
 	    $date1 = $date1 + 12*60*60 ;
 	    
-	    $gale_warning = $return->gale_warning;
+	    $gale_warning = $return->gale_warning_forecast;
 	    $warn ='';
 	    if ( ($gale_warning) == 1) {
 		    $warn = 'GALE WARNING! ';
