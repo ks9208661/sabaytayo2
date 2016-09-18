@@ -226,8 +226,7 @@ Description:
 	    
 	    var_dump($return);
 	    
-	    $date1 = date('Y-m-d', $return->last_update);
-	    $date1 = $date1 + 12*60*60 ;
+	    $date1 = date('Y-m-d', ( $return->last_update + 12*60*60 ) ) ;
 	    
 	    $gale_warning = $return->gale_warning_forecast;
 	    $warn ='';
