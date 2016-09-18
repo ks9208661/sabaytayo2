@@ -108,9 +108,15 @@ Description:
         sabaytayo($text);
         break;
       case 'WEATHER':
-        $response_sms = get_current_weather( $check[1] );
-        send_sms($subscriber_number, $response_sms);
-        break;
+      	if ( ($check[1]) == 'FORECAST' ) {
+        	$response_sms = get_current_weather( $check[2] );
+			send_sms($subscriber_number, $response_sms);
+			break;
+      	} else {
+	      	$response_sms = get_current_weather( $check[2] );
+			send_sms($subscriber_number, $response_sms);
+			break;
+      	}
       
       case 'BOATMAN':
         echo $check[1];
@@ -181,7 +187,7 @@ Description:
     file_put_contents(QUERY_FILE, "$query\n", FILE_APPEND | LOCK_EX);
   }
   
-  function get_current_weather($port) {  
+    function get_current_weather($port) {  
     global $wpdb;  
 
     $query = " SELECT last_update, temp_current, windspeed_current, direction_current, chance_rain_current
@@ -194,10 +200,14 @@ Description:
     var_dump($return);
     
     $date1 = date('Y-m-d', $return->last_update);
+    $gale_warning = $return->gale_warning;
+    $warn ='';
+    if ( ($gale_warning) == 1) {
+	    $warn = 'GALE WARNING!';
+    } 
     
-    $return_text = 'Current Weather for '. $port .' on ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
+    $return_text = $warn . 'Current Weather for '. $port .' on ' . $date1 . ' Temp:' . $return->temp_current . ' Wind:' . $return->windspeed_current . 'km/s-' . $return->direction_current . ' with chance of rain:' .$return->chance_rain_current . '%'; 
     return $return_text;
-    
   }	
 
 
