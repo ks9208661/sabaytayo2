@@ -27,7 +27,7 @@ Description:
   define('DEFAULT_TIMEZONE_OFFSET', '+08:00' );
   define('TIME_WINDOW', 1209600); // 2 weeks
   define('TRIPS_TABLE', 'st_trips' );
-  define('GLOBE_APP_NUMBER', '0465');
+  define('GLOBE_APP_NUMBER', '3363');
   define('SUBSCRIBER_TABLE', 'st_member_mobiles' );
 
 /***************************************************************

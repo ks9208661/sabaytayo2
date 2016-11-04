@@ -22,7 +22,7 @@
   define('LOG_DIR', WORKING_DIR.'tb-logs/' );
   define('LOG_FILE', LOG_DIR.APP_NAME.'.log' );
   define('INCOMING_TEXTS_DIR', WORKING_DIR.'tb-in/' );
-  define('GLOBE_APP_NUMBER', '0465');
+  define('GLOBE_APP_NUMBER', '3363');
   define('TOKEN_SEPARATOR', "|||" );
   define('PHP_FULL_PATH',  '/usr/bin/php5.5-cli' );
   define('ST_POLLER', WORKING_DIR.'tb-sabaytayo-poller.php' );

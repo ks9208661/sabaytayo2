@@ -24,7 +24,7 @@ Description:
   define('PROCESSED_TEXTS_DIR', WORKING_DIR.'tb-proc/' );
   define('LOG_DIR', WORKING_DIR.'tb-logs/' );
   define('LOG_FILE', LOG_DIR.APP_NAME.'.log' );
-  define('GLOBE_APP_NUMBER', '0465');
+  define('GLOBE_APP_NUMBER', '3363');
   define('LOCK_FILE', WORKING_DIR.APP_NAME.'.lock');
   define('QUERY_FILE', WORKING_DIR.'queries.sql' );
   define('RESPONSE_SMS_PRE', 'TY from SABAYTAYO! ' );
